@@ -54,7 +54,7 @@ namespace ObjectStorageSharp {
         /// <param name="gigabyte"></param>
         /// <returns></returns>
         public async Task<HttpStatusCode> CreateContainer(string name, IDictionary<string, string> headers = null) {
-            var result = await WebExtension.Put(BaseUrl, null, authToken: KeyStone.Token
+            var result = await WebExtension.Put($"{BaseUrl}/{name}", null, authToken: KeyStone.Token
                 , headers: headers);
             var str = await result.Content.ReadAsStringAsync();
             return result.StatusCode;
