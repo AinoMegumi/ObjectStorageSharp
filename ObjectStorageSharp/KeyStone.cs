@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace ObjectStorageSharp {
     public class KeyStone {
-        public string AuthUrl { get; protected set; }
+        public KeyStoneResult Token { get; private set; }
 
         protected KeyStone() { }
         public static async Task<KeyStone> Authenticate(string url, string tenant, string user, string pass) {
@@ -26,8 +27,7 @@ namespace ObjectStorageSharp {
             }
 
             return new KeyStone() {
-                AuthUrl = url,
-                // Token
+                Token = JsonConvert.DeserializeObject<KeyStoneResult>(content),
             };
         }
     }
