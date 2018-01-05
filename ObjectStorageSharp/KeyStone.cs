@@ -9,8 +9,22 @@ using System.Threading.Tasks;
 
 namespace ObjectStorageSharp {
     public class KeyStone {
-        public KeyStoneResult Token { get; private set; }
+        public KeyStoneResult AuthData { get; private set; }
+        /// <summary>
+        /// X-Auth-Tokenに付与するトークン
+        /// </summary>
+        public string Token => AuthData?.access?.token?.id ?? null;
+        /// <summary>
+        /// トークンの有効期限が切れている
+        /// </summary>
+        public bool IsTokenExpired => (AuthData?.access?.token?.expires ?? DateTime.MinValue) < DateTime.Now;
 
+        public KeyStone(KeyStoneResult authData) {
+            this.AuthData = authData;
+        }
+        public KeyStone(string authDataJson) {
+            this.AuthData = JsonConvert.DeserializeObject<KeyStoneResult>(authDataJson);
+        }
         protected KeyStone() { }
         public static async Task<KeyStone> Authenticate(string url, string tenant, string user, string pass) {
             var data = new JObject() as dynamic;
@@ -23,12 +37,13 @@ namespace ObjectStorageSharp {
             HttpResponseMessage result = await WebExtension.Post(url, data, authToken: null);
             var content = await result.Content.ReadAsStringAsync();
             if (result.StatusCode != System.Net.HttpStatusCode.OK) {
-                throw new HttpRequestException(result.ToString());
+                throw new HttpRequestException(content);
             }
 
             return new KeyStone() {
-                Token = JsonConvert.DeserializeObject<KeyStoneResult>(content),
+                AuthData = JsonConvert.DeserializeObject<KeyStoneResult>(content),
             };
         }
+
     }
 }

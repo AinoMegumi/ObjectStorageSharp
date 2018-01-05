@@ -17,13 +17,43 @@ namespace ObjectStorageSharp {
         public static HttpClient AddContentHeader(this HttpClient client, string header = "application/json") => client.AddHeader("Content-Type", header);
         public static HttpClient AddAuthToken(this HttpClient client, string token) => (token != null) ? client.AddHeader("X-Auth-Token", token) : client;
 
-
-        public static Task<HttpResponseMessage> Post(string url, string jsonStr, string authToken = null) {
-            httpClient.AddContentHeader().AddAuthToken(authToken);
-
-            var content = new StringContent(jsonStr, Encoding.UTF8, "application/json");
-            return httpClient.PostAsync(url, content);
+        public static Task<HttpResponseMessage> Do(
+            Func<string, HttpContent, Task<HttpResponseMessage>> method,
+            string url, string jsonStr, string authToken = null
+            , IDictionary<string, string> headers = null
+            ) {
+            httpClient.AddContentHeader().AddAcceptHeader().AddAuthToken(authToken);
+            if (headers != null) {
+                foreach (var h in headers) {
+                    httpClient.AddHeader(h.Key, h.Value);
+                }
+            }
+            var content = new StringContent(jsonStr ?? "", Encoding.UTF8, "application/json");
+            return method(url, content);
         }
-        public static Task<HttpResponseMessage> Post(string url, object data, string authToken = null) => Post(url, JsonConvert.SerializeObject(data), authToken);
+
+        public static Task<HttpResponseMessage> Post(
+            string url, string jsonStr, string authToken = null
+            , IDictionary<string, string> headers = null
+            ) => Do(httpClient.PostAsync, url, jsonStr, authToken, headers);
+        public static Task<HttpResponseMessage> Post(
+                string url, object data, string authToken = null
+            , IDictionary<string, string> headers = null
+            ) => Do(httpClient.PostAsync, url, JsonConvert.SerializeObject(data), authToken, headers);
+
+        public static Task<HttpResponseMessage> Get(
+           string url, string authToken = null
+            , IDictionary<string, string> headers = null
+           ) => Do((u, c) => httpClient.GetAsync(u), url, null, authToken, headers);
+
+        public static Task<HttpResponseMessage> Put(
+            string url, string jsonStr, string authToken = null
+            , IDictionary<string, string> headers = null
+            ) => Do(httpClient.PutAsync, url, jsonStr, authToken, headers);
+        public static Task<HttpResponseMessage> Put(
+                string url, object data, string authToken = null
+            , IDictionary<string, string> headers = null
+            ) => Do(httpClient.PutAsync, url, JsonConvert.SerializeObject(data), authToken, headers);
+
     }
 }
