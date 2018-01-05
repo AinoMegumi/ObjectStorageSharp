@@ -13,18 +13,18 @@ namespace ObjectStorageSharp {
         protected KeyStone() { }
         public static async Task<KeyStone> Authenticate(string url, string tenant, string user, string pass) {
             var data = new JObject() as dynamic;
-            data.tenantName = tenant;
-            data.passwordCredentials = new JObject() as dynamic;
-            data.passwordCredentials.username = user;
-            data.passwordCredentials.password = pass;
+            data.auth = new JObject() as dynamic;
+            data.auth.tenantName = tenant;
+            data.auth.passwordCredentials = new JObject() as dynamic;
+            data.auth.passwordCredentials.username = user;
+            data.auth.passwordCredentials.password = pass;
 
             HttpResponseMessage result = await WebExtension.Post(url, data, authToken: null);
-            if(result.StatusCode != System.Net.HttpStatusCode.OK) {
-                Debug.WriteLine(result);
+            var content = await result.Content.ReadAsStringAsync();
+            if (result.StatusCode != System.Net.HttpStatusCode.OK) {
                 throw new HttpRequestException(result.ToString());
             }
 
-            Console.WriteLine(result.Content);
             return new KeyStone() {
                 AuthUrl = url,
                 // Token

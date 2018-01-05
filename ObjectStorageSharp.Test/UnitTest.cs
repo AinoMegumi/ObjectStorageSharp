@@ -7,7 +7,7 @@ namespace ObjectStorageSharp.Test {
     public class UnitTest {
         [TestMethod]
         public void Authenticate() {
-            const string url = "https://ident-r1nd1001.cnode.jp/v2.0/tokens";
+            const string url = "https://identity.tyo1.conoha.io/v2.0/tokens";
             Task.Run(async () => {
                 try {
                     var result = await KeyStone.Authenticate(url, TestConfig.TENANT, TestConfig.USERNAME, TestConfig.PASSWORD);
