@@ -2,6 +2,5 @@
 
 namespace ObjectStorageSharp {
     public class ObjectStorage {
-
     }
 }
