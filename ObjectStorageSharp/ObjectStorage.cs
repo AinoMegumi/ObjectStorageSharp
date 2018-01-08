@@ -2,6 +2,7 @@
 using ObjectStorageSharp.Response;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -106,7 +107,12 @@ namespace ObjectStorageSharp {
             var list = JsonConvert.DeserializeObject<ObjectInfo[]>(await result.Content.ReadAsStringAsync());
             return list;
         }
-
+        /// <summary>
+        /// オブジェクトを取得します
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="headers"></param>
+        /// <returns></returns>
         public async Task<HttpResponseMessage> GetObject(string path, IDictionary<string, string> headers = null) {
             var result = await WebExtension.Get($"{BaseUrl}/{path}", authToken: KeyStone.Token, headers: headers);
             switch (result.StatusCode) {
@@ -114,6 +120,27 @@ namespace ObjectStorageSharp {
                     break;
                 case HttpStatusCode.NotFound:
                     return null;
+                default:
+                    throw new HttpRequestException(await result.Content.ReadAsStringAsync());
+            }
+            return result;
+        }
+        /// <summary>
+        /// ファイルをアップロードします
+        /// </summary>
+        /// <param name="containerName"></param>
+        /// <param name="filePath"></param>
+        /// <param name="contentType"></param>
+        /// <param name="headers"></param>
+        /// <returns></returns>
+        public async Task<HttpResponseMessage> PutObject(string containerName, string filePath, string contentType = null, string dstName = null, IDictionary<string, string> headers = null) {
+            if (dstName == null) {
+                dstName = Path.GetFileName(filePath);
+            }
+            var result = await WebExtension.PutFile($"{BaseUrl}/{containerName}/{dstName}", filePath, contentType, authToken: KeyStone.Token, headers: headers);
+            switch (result.StatusCode) {
+                case HttpStatusCode.Created:
+                    break;
                 default:
                     throw new HttpRequestException(await result.Content.ReadAsStringAsync());
             }

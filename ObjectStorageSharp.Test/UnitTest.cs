@@ -123,6 +123,26 @@ namespace ObjectStorageSharp.Test {
                 }
             }).GetAwaiter().GetResult();
         }
+        [TestMethod]
+        public void PutObject() {
+            Task.Run(async () => {
+                try {
+                    var keystone = await KeyStone.Authenticate(KEYSTONE_BASE_URL, TestConfig.TENANT, TestConfig.USERNAME, TestConfig.PASSWORD);
+                    var os = ObjectStorage.FromKeyStone(keystone);
+                    var result = await os.GetObject("test/test.jpg", new Dictionary<string, string>() {
+                    });
+                    var tmpFileName = "test.jpg";
+                    File.WriteAllBytes(tmpFileName, await result.Content.ReadAsByteArrayAsync());
+                    //upload
+                    var result2 = await os.PutObject("test", tmpFileName, dstName:"test2.jpg", headers: new Dictionary<string, string>() {
+                    });
+                    Console.WriteLine(result2);
+                    File.Delete(tmpFileName);
+                } catch (Exception ex) {
+                    Assert.Fail(ex.Message);
+                }
+            }).GetAwaiter().GetResult();
+        }
 
     }
 }

@@ -1,7 +1,9 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -17,7 +19,7 @@ namespace ObjectStorageSharp {
         public static HttpClient AddContentHeader(this HttpClient client, string header = "application/json") => client.AddHeader("Content-Type", header);
         public static HttpClient AddAuthToken(this HttpClient client, string token) => (token != null) ? client.AddHeader("X-Auth-Token", token) : client;
 
-        public static Task<HttpResponseMessage> Do(
+        public static Task<HttpResponseMessage> DoWithJsonData(
             Func<string, HttpContent, Task<HttpResponseMessage>> method,
             string url, string jsonStr, string authToken = null
             , IDictionary<string, string> headers = null
@@ -38,27 +40,34 @@ namespace ObjectStorageSharp {
         public static Task<HttpResponseMessage> Post(
             string url, string jsonStr, string authToken = null
             , IDictionary<string, string> headers = null
-            ) => Do(httpClient.PostAsync, url, jsonStr, authToken, headers);
+            ) => DoWithJsonData(httpClient.PostAsync, url, jsonStr, authToken, headers);
         public static Task<HttpResponseMessage> Post(
                 string url, object data, string authToken = null
             , IDictionary<string, string> headers = null
-            ) => Do(httpClient.PostAsync, url, JsonConvert.SerializeObject(data), authToken, headers);
+            ) => DoWithJsonData(httpClient.PostAsync, url, JsonConvert.SerializeObject(data), authToken, headers);
 
         public static Task<HttpResponseMessage> Get(
            string url, string authToken = null
             , IDictionary<string, string> headers = null
-           ) => Do((u, c) => httpClient.GetAsync(u), url, null, authToken, headers);
+           ) => DoWithJsonData((u, c) => httpClient.GetAsync(u, HttpCompletionOption.ResponseHeadersRead), url, null, authToken, headers);
 
         public static Task<HttpResponseMessage> Put(
             string url, string jsonStr, string authToken = null
             , IDictionary<string, string> headers = null
-            ) => Do(httpClient.PutAsync, url, jsonStr, authToken, headers);
+            ) => DoWithJsonData(httpClient.PutAsync, url, jsonStr, authToken, headers);
         public static Task<HttpResponseMessage> Put(
                 string url, object data, string authToken = null
             , IDictionary<string, string> headers = null
-            ) => Do(httpClient.PutAsync, url, JsonConvert.SerializeObject(data), authToken, headers);
+            ) => DoWithJsonData(httpClient.PutAsync, url, JsonConvert.SerializeObject(data), authToken, headers);
+
+        public static Task<HttpResponseMessage> PutFile(
+            string url, string filePath, string contentType = null, string authToken = null
+            , IDictionary<string, string> headers = null
+            ) => DoWithJsonData((u, json) => {
+                return httpClient.PutAsync(url, new ByteArrayContent(File.ReadAllBytes(filePath)));
+            }, url, null, authToken, headers);
 
         public static Task<HttpResponseMessage> Delete(string url, string authToken = null) =>
-            Do((u, c) => httpClient.DeleteAsync(u), url, null, authToken);
+            DoWithJsonData((u, c) => httpClient.DeleteAsync(u), url, null, authToken);
     }
 }
