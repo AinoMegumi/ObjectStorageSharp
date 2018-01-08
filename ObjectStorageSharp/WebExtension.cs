@@ -61,13 +61,16 @@ namespace ObjectStorageSharp {
             ) => DoWithJsonData(httpClient.PutAsync, url, JsonConvert.SerializeObject(data), authToken, headers);
 
         public static Task<HttpResponseMessage> PutFile(
-            string url, string filePath, string contentType = null, string authToken = null
+            string url, string filePath, string authToken = null
             , IDictionary<string, string> headers = null
             ) => DoWithJsonData((u, json) => {
                 return httpClient.PutAsync(url, new ByteArrayContent(File.ReadAllBytes(filePath)));
             }, url, null, authToken, headers);
 
-        public static Task<HttpResponseMessage> Delete(string url, string authToken = null) =>
-            DoWithJsonData((u, c) => httpClient.DeleteAsync(u), url, null, authToken);
+        public static Task<HttpResponseMessage> Delete(
+            string url, string authToken = null
+            , IDictionary<string, string> headers = null) =>
+            DoWithJsonData((u, c) => httpClient.DeleteAsync(u), url, null, authToken, headers);
+
     }
 }

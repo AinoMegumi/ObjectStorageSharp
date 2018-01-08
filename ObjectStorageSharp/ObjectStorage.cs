@@ -117,9 +117,8 @@ namespace ObjectStorageSharp {
             var result = await WebExtension.Get($"{BaseUrl}/{path}", authToken: KeyStone.Token, headers: headers);
             switch (result.StatusCode) {
                 case HttpStatusCode.OK:
-                    break;
                 case HttpStatusCode.NotFound:
-                    return null;
+                    break;
                 default:
                     throw new HttpRequestException(await result.Content.ReadAsStringAsync());
             }
@@ -133,13 +132,25 @@ namespace ObjectStorageSharp {
         /// <param name="contentType"></param>
         /// <param name="headers"></param>
         /// <returns></returns>
-        public async Task<HttpResponseMessage> PutObject(string containerName, string filePath, string contentType = null, string dstName = null, IDictionary<string, string> headers = null) {
+        public async Task<HttpResponseMessage> PutObject(string containerName, string filePath, string dstName = null, IDictionary<string, string> headers = null) {
             if (dstName == null) {
                 dstName = Path.GetFileName(filePath);
             }
-            var result = await WebExtension.PutFile($"{BaseUrl}/{containerName}/{dstName}", filePath, contentType, authToken: KeyStone.Token, headers: headers);
+            var result = await WebExtension.PutFile($"{BaseUrl}/{containerName}/{dstName}", filePath, authToken: KeyStone.Token, headers: headers);
             switch (result.StatusCode) {
                 case HttpStatusCode.Created:
+                    break;
+                default:
+                    throw new HttpRequestException(await result.Content.ReadAsStringAsync());
+            }
+            return result;
+        }
+
+        public async Task<HttpResponseMessage> DeleteObject(string containerName, string fileName, IDictionary<string, string> headers = null) {
+            var result = await WebExtension.Delete($"{BaseUrl}/{containerName}/{fileName}", authToken: KeyStone.Token, headers: headers);
+            switch (result.StatusCode) {
+                case HttpStatusCode.NoContent:
+                case HttpStatusCode.NotFound:
                     break;
                 default:
                     throw new HttpRequestException(await result.Content.ReadAsStringAsync());
