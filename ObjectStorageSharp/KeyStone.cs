@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using ObjectStorageSharp.Response;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

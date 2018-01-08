@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ObjectStorageSharp {
+namespace ObjectStorageSharp.Response {
     public class KeyStoneResult {
         public Access access { get; set; }
     }

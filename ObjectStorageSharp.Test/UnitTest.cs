@@ -35,7 +35,7 @@ namespace ObjectStorageSharp.Test {
             }).GetAwaiter().GetResult();
         }
         [TestMethod]
-        public void ObjectStorageInit() {
+        public void GetContainerList() {
             Task.Run(async () => {
                 try {
                     var keystone = await KeyStone.Authenticate(KEYSTONE_BASE_URL, TestConfig.TENANT, TestConfig.USERNAME, TestConfig.PASSWORD);
@@ -43,7 +43,7 @@ namespace ObjectStorageSharp.Test {
                     var os = ObjectStorage.FromKeyStone(keystone);
                     Assert.IsNotNull(os);
 
-                    await os.Test();
+                    var result = await os.GetContainerList();
                 } catch (Exception ex) {
                     Assert.Fail(ex.Message);
                 }
@@ -73,6 +73,51 @@ namespace ObjectStorageSharp.Test {
                         {"X-Container-Read", ".r:*" },
                     });
                     Console.WriteLine(result);
+                } catch (Exception ex) {
+                    Assert.Fail(ex.Message);
+                }
+            }).GetAwaiter().GetResult();
+        }
+        [TestMethod]
+        public void DeleteContainer() {
+            Task.Run(async () => {
+                try {
+                    var keystone = await KeyStone.Authenticate(KEYSTONE_BASE_URL, TestConfig.TENANT, TestConfig.USERNAME, TestConfig.PASSWORD);
+                    var os = ObjectStorage.FromKeyStone(keystone);
+                    var c = await os.CreateContainer("test-delete-container", new Dictionary<string, string>() {
+                    });
+                    var result = await os.DeleteContainer("test-delete-container");
+                } catch (Exception ex) {
+                    Assert.Fail(ex.Message);
+                }
+            }).GetAwaiter().GetResult();
+        }
+        [TestMethod]
+        public void GetObjectList() {
+            Task.Run(async () => {
+                try {
+                    var keystone = await KeyStone.Authenticate(KEYSTONE_BASE_URL, TestConfig.TENANT, TestConfig.USERNAME, TestConfig.PASSWORD);
+                    var os = ObjectStorage.FromKeyStone(keystone);
+                    var result = await os.GetObjectList("test", new Dictionary<string, string>() {
+                    });
+                    Console.WriteLine(result);
+                } catch (Exception ex) {
+                    Assert.Fail(ex.Message);
+                }
+            }).GetAwaiter().GetResult();
+        }
+        [TestMethod]
+        public void GetObject() {
+            Task.Run(async () => {
+                try {
+                    var keystone = await KeyStone.Authenticate(KEYSTONE_BASE_URL, TestConfig.TENANT, TestConfig.USERNAME, TestConfig.PASSWORD);
+                    var os = ObjectStorage.FromKeyStone(keystone);
+                    var result = await os.GetObject("test/test.jpg", new Dictionary<string, string>() {
+                    });
+                    Console.WriteLine(result);
+                    var result2 = await os.GetObject("test/not_found", new Dictionary<string, string>() {
+                    });
+                    Console.WriteLine(result2);
                 } catch (Exception ex) {
                     Assert.Fail(ex.Message);
                 }

@@ -22,6 +22,9 @@ namespace ObjectStorageSharp {
             string url, string jsonStr, string authToken = null
             , IDictionary<string, string> headers = null
             ) {
+            // これやらないと追記されていく
+            httpClient.DefaultRequestHeaders.Clear();
+            // 最初からAccept/Content-Typeは付与しているけど上書き可
             httpClient.AddContentHeader().AddAcceptHeader().AddAuthToken(authToken);
             if (headers != null) {
                 foreach (var h in headers) {
@@ -55,5 +58,7 @@ namespace ObjectStorageSharp {
             , IDictionary<string, string> headers = null
             ) => Do(httpClient.PutAsync, url, JsonConvert.SerializeObject(data), authToken, headers);
 
+        public static Task<HttpResponseMessage> Delete(string url, string authToken = null) =>
+            Do((u, c) => httpClient.DeleteAsync(u), url, null, authToken);
     }
 }
