@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace ObjectStorageSharp.Response {
+namespace ObjectStorageSharp.Response
+{
     public class ObjectInfo {
         public string hash { get; set; }
         public DateTime last_modified { get; set; }

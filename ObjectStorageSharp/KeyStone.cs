@@ -2,13 +2,11 @@
 using Newtonsoft.Json.Linq;
 using ObjectStorageSharp.Response;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace ObjectStorageSharp {
+namespace ObjectStorageSharp
+{
     public class KeyStone {
         public KeyStoneResult AuthData { get; private set; }
         /// <summary>
