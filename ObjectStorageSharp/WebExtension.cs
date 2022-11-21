@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace ObjectStorageSharp {
     public static class WebExtension {
-        private static HttpClient httpClient = new HttpClient();
+        private static readonly HttpClient httpClient = new HttpClient();
 
         public static HttpClient AddHeader(this HttpClient client, string name, string value) {
             client.DefaultRequestHeaders.TryAddWithoutValidation(name, value);
