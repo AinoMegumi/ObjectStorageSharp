@@ -133,9 +133,7 @@ namespace ObjectStorageSharp {
         /// <param name="headers"></param>
         /// <returns></returns>
         public async Task<HttpResponseMessage> PutObject(string containerName, string filePath, string dstName = null, IDictionary<string, string> headers = null) {
-            if (dstName == null) {
-                dstName = Path.GetFileName(filePath);
-            }
+            dstName ??= Path.GetFileName(filePath);
             var result = await WebExtension.PutFile($"{BaseUrl}/{containerName}/{dstName}", filePath, authToken: KeyStone.Token, headers: headers);
             switch (result.StatusCode) {
                 case HttpStatusCode.Created:
