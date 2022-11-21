@@ -37,7 +37,7 @@ namespace ObjectStorageSharp {
             var result = await WebExtension.Get(BaseUrl, KeyStone.Token);
             switch (result.StatusCode) {
                 case HttpStatusCode.NoContent:
-                    return new ContainerInfo[] { };
+                    return Array.Empty<ContainerInfo>();
                 case HttpStatusCode.OK:
                     break;
                 default:
@@ -98,7 +98,7 @@ namespace ObjectStorageSharp {
             var result = await WebExtension.Get($"{BaseUrl}/{containerName}", authToken: KeyStone.Token, headers: headers);
             switch (result.StatusCode) {
                 case HttpStatusCode.NoContent:
-                    return new ObjectInfo[] { };
+                    return Array.Empty<ObjectInfo>();
                 case HttpStatusCode.OK:
                     break;
                 default:
