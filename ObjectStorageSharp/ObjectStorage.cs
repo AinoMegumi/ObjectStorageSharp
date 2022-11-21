@@ -55,7 +55,6 @@ namespace ObjectStorageSharp {
                 , headers: new Dictionary<string, string>(){
                     { "X-Account-Meta-Quota-Giga-Bytes", $"{gigabyte}" },
                 });
-            var str = await result.Content.ReadAsStringAsync();
             if (result.StatusCode != System.Net.HttpStatusCode.NoContent) throw new HttpRequestException(await result.Content.ReadAsStringAsync());
         }
 
